@@ -10,7 +10,8 @@ function getRepositories(user) {
     var url = repJson[i].html_url;
     if (repJson[i].language != null) {var language = repJson[i].language;}
     else {var language = "No language specified";}
-    repositories.push([name, url, language]);
+    var topics = repJson[i].topics;
+    repositories.push([name, url, language, topics]);
   }
   return repositories;
 }
@@ -31,9 +32,23 @@ function getRepository(user, repo) {
   var lastUpdateDate = `${updateDate.getDay()}/${updateDate.getMonth()}/${updateDate.getFullYear()}`;
   var stars = repJson.stargazers_count;
   var watches = repJson.watchers_count;
-  const repositorio = [fullName, visibility, isFork, url, creationDate, lastUpdateDate, stars, watches];
+  var contents = repJson.contents_url;
+  var topics = repJson.topics;
+  const repositorio = [fullName, visibility, isFork, url, creationDate, lastUpdateDate, stars, watches, contents, topics];
   if (isFork) {
     repositorio.push(repJson.parent.full_name, repJson.parent.owner.login, repJson.parent.html_url);
   }
   return repositorio;
+}
+
+// Revisando si forma parte de un Portafolio
+function getPortfolioContentRepositories(user) {
+  var repositories = getRepositories(user);
+  var portfolioRepositories = [];
+  for (var x = 0; x < repositories.length; x++) {
+    if (repositories[x][3].includes("portfolio-content")) {
+      portfolioRepositories.push(repositories[x][0]);
+    }
+  }
+  return portfolioRepositories;
 }
